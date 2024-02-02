@@ -55,3 +55,5 @@ src/application/service/fcm/*.json
 .vscode/
 
 script/
+
+users.json
