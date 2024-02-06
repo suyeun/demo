@@ -17,7 +17,6 @@ export class FcmService {
   }
 
   async sendNotification(token: string, title: string, body: string): Promise<string> {
-    console.log('token', token);
     const message: admin.messaging.Message = {
       token,
       notification: {
@@ -28,9 +27,11 @@ export class FcmService {
 
     try {
       const response = await this.fcm.send(message);
+
       return response;
     } catch (error) {
-      console.log(error);
+      //console.log(error);
+      return 'error';
       throw new Error('Failed to send notification.');
     }
   }

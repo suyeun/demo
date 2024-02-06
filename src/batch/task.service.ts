@@ -46,32 +46,33 @@ export class TaskService {
           if (!acc[day]) {
             acc[day] = [];
           }
+          cur.startPush = false;
+          cur.endPush = false;
           acc[day].push(cur);
         });
         return acc;
       }, {});
 
-      //fs.writeFileSync('users.json', JSON.stringify(result));
+      fs.writeFileSync('users.json', JSON.stringify(result));
     } catch (error) {
       console.error(`Error in getPushList: ${error}`);
     }
   }
 
-  @Interval('intervalTask', 13000) // 앱 실행 후 3초 후에 처음 수행되며, 3초마다 반복
+  @Interval('intervalTask', 3000) // 앱 실행 후 3초 후에 처음 수행되며, 3초마다 반복
   handleInterval() {
+    //this.getPushList();
     const token =
       'd98AKdh6X0B0sIvsK7bC0L:APA91bHh_8GKZSpV56shxfAKDesEfleoTM-UKCbI04G_W96TI87myBM80OlLati118S12XxIUJBBth8uX_hWcuzX-fFt41VxvXMqMocMTZiRBtiGA5lzzR0MEQAkg0UJYTQ45pD1_kwc';
     const title = 'title';
     const description = 'description';
     const response = this.fcmService.sendNotification(token, title, description);
-    const getPushList = this.getPushList();
-    console.log('getPushList', getPushList);
+
     this.logger.log('Task Called!');
   }
 
   @Cron(CronExpression.EVERY_SECOND)
   handleCron() {
-    console.log('11111');
     const date = new Date();
     let day = date.getDay(); // 0 (일요일) ~ 6 (토요일)
     let today = '1';
@@ -91,39 +92,69 @@ export class TaskService {
         const startTime = data.startTime;
         const endTime = data.endTime;
         const pushToken = data.userId.pushToken;
+
         //console.log(startTime);
-        const tt = this.getRecentTimes([startTime, endTime], 10);
-        console.log('endTime', tt);
-        //const response = this.fcmService.sendNotification(token, title, description);
+        const startTimeCK = this.getStartTimes(startTime, 20);
+        if (startTimeCK == true) {
+          const response = this.fcmService.sendNotification(pushToken, '출근', title + '출근시간입니다.');
+        }
+        const endTimeCK = this.getEndTimes(endTime, 20);
+
+        if (endTimeCK == true) {
+          const response = this.fcmService.sendNotification(pushToken, '퇴근', title + '퇴근시간입니다.');
+        }
       });
     });
     this.logger.log('Task Called!');
   }
 
-  getRecentTimes(data: string[], minutes: number): string[] {
-    const now = new Date();
-    const nowInMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+  getEndTimes(data: string, check: number): boolean {
+    //console.log('data', data);
+    let time = data;
+    const hours = time.split(':')[0];
+    const minutes = time.split(':')[1];
+    const workDt = new Date();
 
-    return data.filter((time) => {
-      const [hours, minutes] = time.split(':').map(Number);
-      let timeInMinutes = hours * 60 + minutes;
+    workDt.setHours(Number(hours), Number(minutes), 0, 0);
+    workDt.setHours(workDt.getHours() + 9);
 
-      // 만약 시간 데이터가 다음 날로 넘어간 경우, 24시간(1440분)을 더해줍니다.
-      if (timeInMinutes < nowInMinutes) {
-        timeInMinutes += 24 * 60;
-      }
+    const newDate = new Date();
+    newDate.setHours(newDate.getHours() + 9);
 
-      // 현재 시간과의 차이가 지정된 분 이내인지 확인
-      return timeInMinutes - nowInMinutes <= minutes && timeInMinutes - nowInMinutes >= 0;
-    });
+    let diff = workDt.getTime() - newDate.getTime(); // 시간 차이를 밀리초로 계산
+
+    let diffInMinutes = Math.floor(diff / 1000 / 60); //분 단위로 계산
+    let diffInSeconds = Math.floor((diff / 1000) % 60); // 초 단위로 계산
+
+    //564997
+    if (Number(diffInMinutes) == 10 && Number(diffInSeconds) == 0) {
+      return true;
+    }
+    return false;
   }
-  // @Interval('intervalTask', 3000) // 앱 실행 후 3초 후에 처음 수행되며, 3초마다 반복
-  // handleInterval() {
-  //   this.logger.log('Task Called!');
-  // }
 
-  // @Timeout('timeout', 3000) // 앱 실행 후 3초 뒤에 한번만 실행
-  // handleTimeout() {
-  //   this.logger.log('Task Called!');
-  // }
+  getStartTimes(data: string, check: number): boolean {
+    //console.log('data', data);
+    let time = data;
+    const hours = time.split(':')[0];
+    const minutes = time.split(':')[1];
+    const workDt = new Date();
+
+    workDt.setHours(Number(hours), Number(minutes), 0, 0);
+    workDt.setHours(workDt.getHours() + 9);
+
+    const newDate = new Date();
+    newDate.setHours(newDate.getHours() + 9);
+
+    let diff = workDt.getTime() - newDate.getTime(); // 시간 차이를 밀리초로 계산
+
+    let diffInMinutes = Math.floor(diff / 1000 / 60); //분 단위로 계산
+    let diffInSeconds = Math.floor((diff / 1000) % 60); // 초 단위로 계산
+
+    //564997
+    if (Number(diffInMinutes) == 10 && Number(diffInSeconds) == 0) {
+      return true;
+    }
+    return false;
+  }
 }
