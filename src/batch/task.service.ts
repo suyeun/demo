@@ -59,14 +59,12 @@ export class TaskService {
     }
   }
 
-  @Interval('intervalTask', 3000) // 앱 실행 후 3초 후에 처음 수행되며, 3초마다 반복
+  @Cron(CronExpression.EVERY_DAY_AT_6AM) // 앱 실행 후 3초 후에 처음 수행되며, 3초마다 반복
   handleInterval() {
-    //this.getPushList();
-    const token =
-      'd98AKdh6X0B0sIvsK7bC0L:APA91bHh_8GKZSpV56shxfAKDesEfleoTM-UKCbI04G_W96TI87myBM80OlLati118S12XxIUJBBth8uX_hWcuzX-fFt41VxvXMqMocMTZiRBtiGA5lzzR0MEQAkg0UJYTQ45pD1_kwc';
-    const title = 'title';
-    const description = 'description';
-    const response = this.fcmService.sendNotification(token, title, description);
+    this.getPushList();
+    //const title = 'title';
+    //const description = 'description';
+    //const response = this.fcmService.sendNotification(token, title, description);
 
     this.logger.log('Task Called!');
   }
