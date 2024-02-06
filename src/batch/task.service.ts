@@ -94,12 +94,12 @@ export class TaskService {
         //console.log(startTime);
         const startTimeCK = this.getStartTimes(startTime, 20);
         if (startTimeCK == true) {
-          const response = this.fcmService.sendNotification(pushToken, '출근', title + '출근시간입니다.');
+          const response = this.fcmService.sendNotification(pushToken, '오늘 알바 시작!', title + ' 출근시간입니다.');
         }
 
         const endTimeCK = this.getEndTimes(endTime, 20);
         if (endTimeCK == true) {
-          const response = this.fcmService.sendNotification(pushToken, '퇴근', title + '퇴근시간입니다.');
+          const response = this.fcmService.sendNotification(pushToken, '오늘 알바 완료!', title + ' 퇴근시간입니다.');
         }
       });
     });
