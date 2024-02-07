@@ -89,13 +89,14 @@ export class TaskService {
         const pushToken = data.userId.pushToken;
 
         //console.log(startTime);
-        const startTimeCK = this.getStartTimes(startTime, 20);
+        const startTimeCK = this.getStartTimes(startTime, 10);
         if (startTimeCK == true) {
           const response = this.fcmService.sendNotification(pushToken, '오늘 알바 시작!', title + ' 출근시간입니다.');
         }
 
-        const endTimeCK = this.getEndTimes(endTime, 20);
+        const endTimeCK = this.getEndTimes(endTime, 10);
         if (endTimeCK == true) {
+          console.log('endTimeCK!!!!');
           const response = this.fcmService.sendNotification(pushToken, '오늘 알바 완료!', title + ' 퇴근시간입니다.');
         }
       });
@@ -120,9 +121,8 @@ export class TaskService {
 
     let diffInMinutes = Math.floor(diff / 1000 / 60); //분 단위로 계산
     let diffInSeconds = Math.floor((diff / 1000) % 60); // 초 단위로 계산
-
     //564997
-    if (diffInMinutes == 10 && diffInSeconds == 0) {
+    if (diffInMinutes == check && diffInSeconds == 0) {
       return true;
     } else {
       return false;
@@ -148,7 +148,7 @@ export class TaskService {
     let diffInSeconds = Math.floor((diff / 1000) % 60); // 초 단위로 계산
 
     //564997
-    if (diffInMinutes == 10 && diffInSeconds == 0) {
+    if (diffInMinutes == check && diffInSeconds == 0) {
       return true;
     } else {
       return false;
