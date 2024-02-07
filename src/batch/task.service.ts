@@ -22,8 +22,6 @@ export class TaskService {
     const name = 'cronSample';
 
     const job = new CronJob('* * * * * *', () => {
-      console.log('!!!');
-
       this.logger.warn(`run! ${name}`);
     });
 
@@ -58,15 +56,14 @@ export class TaskService {
       console.error(`Error in getPushList: ${error}`);
     }
   }
-
-  @Cron(CronExpression.EVERY_DAY_AT_6AM) // 앱 실행 후 3초 후에 처음 수행되며, 3초마다 반복
+  //@Cron(CronExpression.EVERY_DAY_AT_6AM) 오전 6시마다 실행
+  @Cron(CronExpression.EVERY_HOUR) // 앱 실행 후 3초 후에 처음 수행되며, 3초마다 반복
   handleInterval() {
     this.getPushList();
     //const title = 'title';
     //const description = 'description';
     //const response = this.fcmService.sendNotification(token, title, description);
-
-    this.logger.log('Task Called!');
+    this.logger.log('CREATE USER DATA');
   }
 
   @Cron(CronExpression.EVERY_SECOND)
@@ -125,10 +122,11 @@ export class TaskService {
     let diffInSeconds = Math.floor((diff / 1000) % 60); // 초 단위로 계산
 
     //564997
-    if (Number(diffInMinutes) == 10 && Number(diffInSeconds) == 0) {
+    if (diffInMinutes == 10 && diffInSeconds == 0) {
       return true;
+    } else {
+      return false;
     }
-    return false;
   }
 
   getStartTimes(data: string, check: number): boolean {
@@ -150,9 +148,10 @@ export class TaskService {
     let diffInSeconds = Math.floor((diff / 1000) % 60); // 초 단위로 계산
 
     //564997
-    if (Number(diffInMinutes) == 10 && Number(diffInSeconds) == 0) {
+    if (diffInMinutes == 10 && diffInSeconds == 0) {
       return true;
+    } else {
+      return false;
     }
-    return false;
   }
 }

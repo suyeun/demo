@@ -27,7 +27,6 @@ export class FcmService {
 
     try {
       const response = await this.fcm.send(message);
-
       return response;
     } catch (error) {
       //console.log(error);
