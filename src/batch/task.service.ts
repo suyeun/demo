@@ -97,13 +97,16 @@ export class TaskService {
         console.log('endTime', endTime);
 
         if (startTimeCK == true) {
+          console.log('startTime!!!!', title);
+          console.log('!!!!!!!!!!!!', startTime);
           const response = this.fcmService.sendNotification(pushToken, '오늘 알바 시작!', title + ' 출근시간입니다.');
         }
 
         const endTimeCK = this.getEndTimes(endTime, 10);
         console.log('check', startTimeCK, endTimeCK);
         if (endTimeCK == true) {
-          console.log('endTimeCK!!!!');
+          console.log('endTimeCK!!!!', title);
+          console.log('!!!!!!!!!!!!', endTime);
           const response = this.fcmService.sendNotification(pushToken, '오늘 알바 완료!', title + ' 퇴근시간입니다.');
         }
       });
@@ -129,6 +132,8 @@ export class TaskService {
     let diffInMinutes = Math.floor(diff / 1000 / 60); //분 단위로 계산
     let diffInSeconds = Math.floor((diff / 1000) % 60); // 초 단위로 계산
     //564997
+    console.log('diffInMinutes', diffInMinutes);
+    console.log('diffInSeconds', diffInSeconds);
     if (diffInMinutes == check && diffInSeconds == 0) {
       return true;
     } else {
