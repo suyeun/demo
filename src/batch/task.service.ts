@@ -38,6 +38,7 @@ export class TaskService {
     }; // 여기에 보낼 데이터를 채워 넣으세요.
 
     try {
+      console.log('getPushList!!!!');
       const response = await axios.post(url, data);
       let result = response.data.command.reduce((acc, cur) => {
         cur.workDay.forEach((day) => {
@@ -76,7 +77,7 @@ export class TaskService {
       day = 7;
     }
     today = String(day);
-
+    console.log('today!!', today);
     fs.readFile('users.json', 'utf8', (err, data) => {
       //console.log(JSON.parse(data));
       const todayPush = JSON.parse(data);
@@ -90,18 +91,24 @@ export class TaskService {
 
         //console.log(startTime);
         const startTimeCK = this.getStartTimes(startTime, 10);
+
+        console.log('title', title);
+        console.log('startTime', startTime);
+        console.log('endTime', endTime);
+
         if (startTimeCK == true) {
           const response = this.fcmService.sendNotification(pushToken, '오늘 알바 시작!', title + ' 출근시간입니다.');
         }
 
         const endTimeCK = this.getEndTimes(endTime, 10);
+        console.log('check', startTimeCK, endTimeCK);
         if (endTimeCK == true) {
           console.log('endTimeCK!!!!');
           const response = this.fcmService.sendNotification(pushToken, '오늘 알바 완료!', title + ' 퇴근시간입니다.');
         }
       });
     });
-    this.logger.log('Task Called!');
+    //this.logger.log('Task Called!');
   }
 
   getEndTimes(data: string, check: number): boolean {
