@@ -97,9 +97,13 @@ export class TaskService {
         console.log('endTime', endTime);
 
         if (startTimeCK == true) {
-          console.log('startTime!!!!', title);
+          console.log('startTime!!!!', title); //내겐 벌어야되는 치킨값이 있다!!
           console.log('!!!!!!!!!!!!', startTime);
-          const response = this.fcmService.sendNotification(pushToken, '오늘 알바 시작!', title + ' 출근시간입니다.');
+          const response = this.fcmService.sendNotification(
+            pushToken,
+            '[' + title + '] ' + startTime + '~' + endTime,
+            '내겐 벌어야되는 치킨값이 있다!! 출근체크하고 리워드 받아가세요.',
+          );
         }
 
         const endTimeCK = this.getEndTimes(endTime, 10);
@@ -107,7 +111,11 @@ export class TaskService {
         if (endTimeCK == true) {
           console.log('endTimeCK!!!!', title);
           console.log('!!!!!!!!!!!!', endTime);
-          const response = this.fcmService.sendNotification(pushToken, '오늘 알바 완료!', title + ' 퇴근시간입니다.');
+          const response = this.fcmService.sendNotification(
+            pushToken,
+            '기다리던 퇴근시간이에요!',
+            '오늘 하루도 수고하셨습니다. 퇴근체크하고 리워드 받아가세요.',
+          );
         }
       });
     });
