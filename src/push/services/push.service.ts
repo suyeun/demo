@@ -25,7 +25,7 @@ export class PushService {
 
   async getPushList() {
     //http://13.125.225.85:3000/api/v1/admin/users/pushData //POST
-    const url = 'http://13.125.225.85:3000/api/v1/admin/users/pushData';
+    const url = 'http://3.39.177.24:3000/api/v1/admin/users/pushData';
     const data = {
       accessToken: 'e50f15b83ef461e35bc21970ef5e200675f40a816e7aa33261060671a70bdd2f',
       command: {},

@@ -31,9 +31,9 @@ export class TaskService {
   }
 
   async getPushList() {
-    const url = 'http://13.125.225.85:3000/api/v1/admin/users/pushData';
+    const url = 'http://3.39.177.24:3000/api/v1/admin/users/pushData';
     const data = {
-      accessToken: 'e50f15b83ef461e35bc21970ef5e200675f40a816e7aa33261060671a70bdd2f',
+      accessToken: '8809a64d910ea3765e6729acd2498158e6e8b70c99de87cf7d9f6891f506e42a',
       command: {},
     }; // 여기에 보낼 데이터를 채워 넣으세요.
 
@@ -58,7 +58,7 @@ export class TaskService {
     }
   }
   //@Cron(CronExpression.EVERY_DAY_AT_6AM) 오전 6시마다 실행
-  @Cron(CronExpression.EVERY_HOUR) // 앱 실행 후 3초 후에 처음 수행되며, 3초마다 반복
+  @Cron(CronExpression.EVERY_DAY_AT_6AM) // 앱 실행 후 3초 후에 처음 수행되며, 3초마다 반복
   handleInterval() {
     this.getPushList();
     //const title = 'title';
@@ -77,7 +77,7 @@ export class TaskService {
       day = 7;
     }
     today = String(day);
-    console.log('today!!', today);
+    //console.log('today!!', today);
     fs.readFile('users.json', 'utf8', (err, data) => {
       //console.log(JSON.parse(data));
       const todayPush = JSON.parse(data);
@@ -92,13 +92,13 @@ export class TaskService {
         //console.log(startTime);
         const startTimeCK = this.getStartTimes(startTime, 10);
 
-        console.log('title', title);
-        console.log('startTime', startTime);
-        console.log('endTime', endTime);
+        //console.log('title', title);
+        //console.log('startTime', startTime);
+        //console.log('endTime', endTime);
 
         if (startTimeCK == true) {
-          console.log('startTime!!!!', title); //내겐 벌어야되는 치킨값이 있다!!
-          console.log('!!!!!!!!!!!!', startTime);
+          //console.log('startTime!!!!', title); //내겐 벌어야되는 치킨값이 있다!!
+          //console.log('!!!!!!!!!!!!', startTime);
           const response = this.fcmService.sendNotification(
             pushToken,
             '[' + title + '] ' + startTime + '~' + endTime,
@@ -107,10 +107,10 @@ export class TaskService {
         }
 
         const endTimeCK = this.getEndTimes(endTime, 10);
-        console.log('check', startTimeCK, endTimeCK);
+        //console.log('check', startTimeCK, endTimeCK);
         if (endTimeCK == true) {
-          console.log('endTimeCK!!!!', title);
-          console.log('!!!!!!!!!!!!', endTime);
+          //console.log('endTimeCK!!!!', title);
+          //console.log('!!!!!!!!!!!!', endTime);
           const response = this.fcmService.sendNotification(
             pushToken,
             '기다리던 퇴근시간이에요!',
@@ -140,8 +140,8 @@ export class TaskService {
     let diffInMinutes = Math.floor(diff / 1000 / 60); //분 단위로 계산
     let diffInSeconds = Math.floor((diff / 1000) % 60); // 초 단위로 계산
     //564997
-    console.log('diffInMinutes', diffInMinutes);
-    console.log('diffInSeconds', diffInSeconds);
+    //console.log('diffInMinutes', diffInMinutes);
+    //console.log('diffInSeconds', diffInSeconds);
     if (diffInMinutes == check && diffInSeconds == 0) {
       return true;
     } else {
