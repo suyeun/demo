@@ -38,7 +38,6 @@ export class TaskService {
     }; // 여기에 보낼 데이터를 채워 넣으세요.
 
     try {
-      console.log('getPushList!!!!');
       const response = await axios.post(url, data);
       let result = response.data.command.reduce((acc, cur) => {
         cur.workDay.forEach((day) => {
@@ -47,7 +46,7 @@ export class TaskService {
           }
           cur.startPush = false;
           cur.endPush = false;
-          acc[day].push(cur);
+          if (cur.marker.length > 0) acc[day].push(cur);
         });
         return acc;
       }, {});
@@ -113,7 +112,7 @@ export class TaskService {
           //console.log('!!!!!!!!!!!!', endTime);
           const response = this.fcmService.sendNotification(
             pushToken,
-            '기다리던 퇴근시간이에요!',
+            '[' + title + '] ' + '기다리던 퇴근시간이에요!',
             '오늘 하루도 수고하셨습니다. 퇴근체크하고 리워드 받아가세요.',
           );
         }
