@@ -89,8 +89,7 @@ export class TaskService {
         const pushToken = data.userId.pushToken;
 
         //console.log(startTime);
-        const startTimeCK = this.getStartTimes(startTime, 10);
-
+        let startTimeCK = this.getStartTimes(startTime, 10);
         //console.log('title', title);
         //console.log('startTime', startTime);
         //console.log('endTime', endTime);
@@ -108,8 +107,6 @@ export class TaskService {
         const endTimeCK = this.getEndTimes(endTime, 10);
         //console.log('check', startTimeCK, endTimeCK);
         if (endTimeCK == true) {
-          //console.log('endTimeCK!!!!', title);
-          //console.log('!!!!!!!!!!!!', endTime);
           const response = this.fcmService.sendNotification(
             pushToken,
             '[' + title + '] ' + '기다리던 퇴근시간이에요!',
@@ -127,21 +124,21 @@ export class TaskService {
     const hours = time.split(':')[0];
     const minutes = time.split(':')[1];
     const workDt = new Date();
+    workDt.setHours(Number(hours), Number(minutes), 0, 0); // 입력된 시간 설정
 
-    workDt.setHours(Number(hours), Number(minutes), 0, 0);
-    workDt.setHours(workDt.getHours() + 9);
+    // 현재 시간 구하기
+    const currentTime = new Date();
 
-    const newDate = new Date();
-    newDate.setHours(newDate.getHours() + 9);
+    // 시간 차이를 밀리초로 계산
+    let diffInMillis = workDt.getTime() - currentTime.getTime();
 
-    let diff = workDt.getTime() - newDate.getTime(); // 시간 차이를 밀리초로 계산
+    // 밀리초를 분 단위로 변환
+    let diffInMinutes = Math.floor(diffInMillis / 1000 / 60);
 
-    let diffInMinutes = Math.floor(diff / 1000 / 60); //분 단위로 계산
-    let diffInSeconds = Math.floor((diff / 1000) % 60); // 초 단위로 계산
-    //564997
-    //console.log('diffInMinutes', diffInMinutes);
-    //console.log('diffInSeconds', diffInSeconds);
-    if (diffInMinutes == check && diffInSeconds == 0) {
+    let diffInSeconds = Math.floor((diffInMillis / 1000) % 60);
+
+    // 비교하는 분의 차이가 정확히 10분인 경우 true를 반환
+    if (diffInMinutes === check && diffInSeconds === 1) {
       return true;
     } else {
       return false;
@@ -149,25 +146,27 @@ export class TaskService {
   }
 
   getStartTimes(data: string, check: number): boolean {
-    //console.log('data', data);
+    // 입력된 시간 (time)을 분리하여 workDt에 설정
+    // 입력된 시간 (time)을 분리하여 workDt에 설정
     let time = data;
     const hours = time.split(':')[0];
     const minutes = time.split(':')[1];
     const workDt = new Date();
+    workDt.setHours(Number(hours), Number(minutes), 0, 0); // 입력된 시간 설정
 
-    workDt.setHours(Number(hours), Number(minutes), 0, 0);
-    workDt.setHours(workDt.getHours() + 9);
+    // 현재 시간 구하기
+    const currentTime = new Date();
 
-    const newDate = new Date();
-    newDate.setHours(newDate.getHours() + 9);
+    // 시간 차이를 밀리초로 계산
+    let diffInMillis = workDt.getTime() - currentTime.getTime();
 
-    let diff = workDt.getTime() - newDate.getTime(); // 시간 차이를 밀리초로 계산
+    // 밀리초를 분 단위로 변환
+    let diffInMinutes = Math.floor(diffInMillis / 1000 / 60);
 
-    let diffInMinutes = Math.floor(diff / 1000 / 60); //분 단위로 계산
-    let diffInSeconds = Math.floor((diff / 1000) % 60); // 초 단위로 계산
+    let diffInSeconds = Math.floor((diffInMillis / 1000) % 60);
 
-    //564997
-    if (diffInMinutes == check && diffInSeconds == 0) {
+    // 비교하는 분의 차이가 정확히 10분인 경우 true를 반환
+    if (diffInMinutes === check && diffInSeconds === 1) {
       return true;
     } else {
       return false;
