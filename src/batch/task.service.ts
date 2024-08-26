@@ -78,32 +78,39 @@ export class TaskService {
     today = String(day);
     //console.log('today!!', today);
     fs.readFile('users.json', 'utf8', (err, data) => {
+      //console.log(JSON.parse(data));
       const todayPush = JSON.parse(data);
       todayPush[today].forEach((data) => {
+        //console.log(data.name, data.startTime, data.endTime, data.userId.pushToken);
+
         const title = data.name;
         const startTime = data.startTime;
         const endTime = data.endTime;
         const pushToken = data.userId.pushToken;
 
-        if (!data.startPush && this.getStartTimes(startTime, 10)) {
-          this.fcmService.sendNotification(
+        //console.log(startTime);
+        let startTimeCK = this.getStartTimes(startTime, 10);
+
+        if (startTimeCK == true) {
+          //console.log('startTime!!!!', title); //내겐 벌어야되는 치킨값이 있다!!
+          //console.log('!!!!!!!!!!!!', startTime);
+          const response = this.fcmService.sendNotification(
             pushToken,
             '[' + title + '] ' + startTime + '~' + endTime,
             '내겐 벌어야되는 치킨값이 있다!! 출근체크하고 리워드 받아가세요.',
           );
-          data.startPush = true; // 알림이 발송되었음을 기록
         }
 
-        if (!data.endPush && this.getEndTimes(endTime, 10)) {
-          this.fcmService.sendNotification(
+        const endTimeCK = this.getEndTimes(endTime, 10);
+        //console.log('check', startTimeCK, endTimeCK);
+        if (endTimeCK == true) {
+          const response = this.fcmService.sendNotification(
             pushToken,
             '[' + title + '] ' + '기다리던 퇴근시간이에요!',
             '오늘 하루도 수고하셨습니다. 퇴근체크하고 리워드 받아가세요.',
           );
-          data.endPush = true; // 알림이 발송되었음을 기록
         }
       });
-      fs.writeFileSync('users.json', JSON.stringify(todayPush)); // 플래그 업데이트 후 다시 저장
     });
     //this.logger.log('Task Called!');
   }
