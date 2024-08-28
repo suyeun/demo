@@ -42,7 +42,7 @@ export class TaskService {
             acc[day] = [];
           }
           cur.startPush = false; // Initialize push flags
-          cur.endPush = false;   // Initialize push flags
+          cur.endPush = false; // Initialize push flags
           if (cur.marker.length > 0) acc[day].push(cur);
         });
         return acc;
@@ -60,7 +60,8 @@ export class TaskService {
     this.logger.log('CREATE USER DATA');
   }
 
-  @Cron(CronExpression.EVERY_SECOND)
+  // Adjusted cron job to run every minute instead of every second
+  @Cron('* * * * *')
   handleCron() {
     const date = new Date();
     let day = date.getDay();
@@ -89,7 +90,7 @@ export class TaskService {
           this.fcmService.sendNotification(
             pushToken,
             `[${title}] ${startTime}~${endTime}`,
-            '내겐 벌어야되는 치킨값이 있다!! 출근체크하고 리워드 받아가세요.'
+            '내겐 벌어야되는 치킨값이 있다!! 출근체크하고 리워드 받아가세요.',
           );
           user.startPush = true; // Mark start push as sent
         }
@@ -98,7 +99,7 @@ export class TaskService {
           this.fcmService.sendNotification(
             pushToken,
             `[${title}] 기다리던 퇴근시간이에요!`,
-            '오늘 하루도 수고하셨습니다. 퇴근체크하고 리워드 받아가세요.'
+            '오늘 하루도 수고하셨습니다. 퇴근체크하고 리워드 받아가세요.',
           );
           user.endPush = true; // Mark end push as sent
         }
