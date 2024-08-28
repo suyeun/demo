@@ -85,7 +85,7 @@ export class TaskService {
         const startTime = user.startTime;
         const endTime = user.endTime;
         const pushToken = user.userId.pushToken;
-
+        console.log(title, ' ', user.startPush);
         if (!user.startPush && this.getStartTimes(startTime, 10)) {
           this.fcmService.sendNotification(
             pushToken,
