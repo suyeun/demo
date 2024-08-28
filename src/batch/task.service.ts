@@ -120,7 +120,7 @@ export class TaskService {
     let diffInMinutes = Math.floor(diffInMillis / 1000 / 60);
     let diffInSeconds = Math.floor((diffInMillis / 1000) % 60);
 
-    return diffInMinutes === check && diffInSeconds === 1;
+    return diffInMinutes === check;
   }
 
   getStartTimes(data: string, check: number): boolean {
@@ -133,6 +133,6 @@ export class TaskService {
     let diffInMinutes = Math.floor(diffInMillis / 1000 / 60);
     let diffInSeconds = Math.floor((diffInMillis / 1000) % 60);
 
-    return diffInMinutes === check && diffInSeconds === 1;
+    return diffInMinutes === check;
   }
 }
