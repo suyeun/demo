@@ -61,7 +61,7 @@ export class TaskService {
   }
 
   // Adjusted cron job to run every minute instead of every second
-  @Cron('* * * * *')
+  @Cron(CronExpression.EVERY_MINUTE)
   handleCron() {
     const date = new Date();
     let day = date.getDay();
