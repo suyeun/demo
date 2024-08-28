@@ -60,9 +60,8 @@ export class TaskService {
     this.logger.log('CREATE USER DATA');
   }
 
-  // Adjusted cron job to run every minute instead of every second
   @Cron(CronExpression.EVERY_MINUTE)
-  handleCron() {
+  async handleCron() {
     const date = new Date();
     let day = date.getDay();
     let today = '1';
@@ -71,43 +70,62 @@ export class TaskService {
     }
     today = String(day);
 
-    fs.readFile('users.json', 'utf8', (err, data) => {
-      if (err) {
-        this.logger.error(`Error reading users.json: ${err}`);
-        return;
-      }
-
+    try {
+      const data = await fs.promises.readFile('users.json', 'utf8');
       const todayPush = JSON.parse(data);
       if (!todayPush[today]) return; // No data for today
 
-      todayPush[today].forEach((user) => {
-        const title = user.name;
-        const startTime = user.startTime;
-        const endTime = user.endTime;
-        const pushToken = user.userId.pushToken;
-        console.log(title, ' ', user.startPush);
-        if (!user.startPush && this.getStartTimes(startTime, 10)) {
-          this.fcmService.sendNotification(
-            pushToken,
-            `[${title}] ${startTime}~${endTime}`,
-            '내겐 벌어야되는 치킨값이 있다!! 출근체크하고 리워드 받아가세요.',
-          );
-          user.startPush = true; // Mark start push as sent
-        }
+      // Use a map to process promises sequentially
+      await Promise.all(
+        todayPush[today].map(async (user) => {
+          const title = user.name;
+          const startTime = user.startTime;
+          const endTime = user.endTime;
+          const pushToken = user.userId.pushToken;
 
-        if (!user.endPush && this.getEndTimes(endTime, 10)) {
-          this.fcmService.sendNotification(
-            pushToken,
-            `[${title}] 기다리던 퇴근시간이에요!`,
-            '오늘 하루도 수고하셨습니다. 퇴근체크하고 리워드 받아가세요.',
-          );
-          user.endPush = true; // Mark end push as sent
-        }
-      });
+          // Start Push
+          if (!user.startPush && this.getStartTimes(startTime, 10)) {
+            try {
+              await this.fcmService.sendNotification(
+                pushToken,
+                `[${title}] ${startTime}~${endTime}`,
+                '내겐 벌어야되는 치킨값이 있다!! 출근체크하고 리워드 받아가세요.',
+              );
+              user.startPush = true; // Mark start push as sent only if successful
+              await this.updatePushData(todayPush); // Update file after each push
+            } catch (error) {
+              this.logger.error(`Failed to send start push notification: ${error}`);
+            }
+          }
 
-      // Write the updated data back to the file
-      fs.writeFileSync('users.json', JSON.stringify(todayPush));
-    });
+          // End Push
+          if (!user.endPush && this.getEndTimes(endTime, 10)) {
+            try {
+              await this.fcmService.sendNotification(
+                pushToken,
+                `[${title}] 기다리던 퇴근시간이에요!`,
+                '오늘 하루도 수고하셨습니다. 퇴근체크하고 리워드 받아가세요.',
+              );
+              user.endPush = true; // Mark end push as sent only if successful
+              await this.updatePushData(todayPush); // Update file after each push
+            } catch (error) {
+              this.logger.error(`Failed to send end push notification: ${error}`);
+            }
+          }
+        }),
+      );
+    } catch (error) {
+      this.logger.error(`Error reading or updating users.json: ${error}`);
+    }
+  }
+
+  async updatePushData(updatedData: any) {
+    // Update the users.json file with the new push status
+    try {
+      await fs.promises.writeFile('users.json', JSON.stringify(updatedData));
+    } catch (error) {
+      this.logger.error(`Failed to update users.json: ${error}`);
+    }
   }
 
   getEndTimes(data: string, check: number): boolean {
@@ -118,7 +136,6 @@ export class TaskService {
     const currentTime = new Date();
     let diffInMillis = workDt.getTime() - currentTime.getTime();
     let diffInMinutes = Math.floor(diffInMillis / 1000 / 60);
-    let diffInSeconds = Math.floor((diffInMillis / 1000) % 60);
 
     return diffInMinutes === check;
   }
@@ -131,7 +148,6 @@ export class TaskService {
     const currentTime = new Date();
     let diffInMillis = workDt.getTime() - currentTime.getTime();
     let diffInMinutes = Math.floor(diffInMillis / 1000 / 60);
-    let diffInSeconds = Math.floor((diffInMillis / 1000) % 60);
 
     return diffInMinutes === check;
   }
