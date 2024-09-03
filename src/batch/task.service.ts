@@ -85,7 +85,6 @@ export class TaskService {
           // Start Push
           if (!user.startPush && this.getStartTimes(startTime, 10)) {
             try {
-              // 푸시 메시지를 보낸 후 바로 플래그를 true로 설정
               await this.fcmService.sendNotification(
                 pushToken,
                 `[${title}] ${startTime}~${endTime}`,
@@ -102,7 +101,6 @@ export class TaskService {
           // End Push
           if (!user.endPush && this.getEndTimes(endTime, 10)) {
             try {
-              // 푸시 메시지를 보낸 후 바로 플래그를 true로 설정
               await this.fcmService.sendNotification(
                 pushToken,
                 `[${title}] 기다리던 퇴근시간이에요!`,
@@ -139,7 +137,8 @@ export class TaskService {
     let diffInMillis = workDt.getTime() - currentTime.getTime();
     let diffInMinutes = Math.floor(diffInMillis / 1000 / 60);
 
-    return diffInMinutes === check;
+    // Changed condition to check range instead of exact match
+    return diffInMinutes >= 0 && diffInMinutes <= check;
   }
 
   getStartTimes(data: string, check: number): boolean {
@@ -151,6 +150,7 @@ export class TaskService {
     let diffInMillis = workDt.getTime() - currentTime.getTime();
     let diffInMinutes = Math.floor(diffInMillis / 1000 / 60);
 
-    return diffInMinutes === check;
+    // Changed condition to check range instead of exact match
+    return diffInMinutes >= 0 && diffInMinutes <= check;
   }
 }
