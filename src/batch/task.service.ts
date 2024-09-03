@@ -75,7 +75,6 @@ export class TaskService {
       const todayPush = JSON.parse(data);
       if (!todayPush[today]) return; // No data for today
 
-      // Use a map to process promises sequentially
       await Promise.all(
         todayPush[today].map(async (user) => {
           const title = user.name;
@@ -86,6 +85,7 @@ export class TaskService {
           // Start Push
           if (!user.startPush && this.getStartTimes(startTime, 10)) {
             try {
+              // 푸시 메시지를 보낸 후 바로 플래그를 true로 설정
               await this.fcmService.sendNotification(
                 pushToken,
                 `[${title}] ${startTime}~${endTime}`,
@@ -101,6 +101,7 @@ export class TaskService {
           // End Push
           if (!user.endPush && this.getEndTimes(endTime, 10)) {
             try {
+              // 푸시 메시지를 보낸 후 바로 플래그를 true로 설정
               await this.fcmService.sendNotification(
                 pushToken,
                 `[${title}] 기다리던 퇴근시간이에요!`,
@@ -120,7 +121,6 @@ export class TaskService {
   }
 
   async updatePushData(updatedData: any) {
-    // Update the users.json file with the new push status
     try {
       await fs.promises.writeFile('users.json', JSON.stringify(updatedData));
     } catch (error) {
