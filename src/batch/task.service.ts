@@ -93,6 +93,7 @@ export class TaskService {
               );
               user.startPush = true; // Mark start push as sent only if successful
               await this.updatePushData(todayPush); // Update file after each push
+              console.log(`Start push sent for user: ${user.name} at ${new Date().toISOString()}`);
             } catch (error) {
               this.logger.error(`Failed to send start push notification: ${error}`);
             }
@@ -109,6 +110,7 @@ export class TaskService {
               );
               user.endPush = true; // Mark end push as sent only if successful
               await this.updatePushData(todayPush); // Update file after each push
+              console.log(`End push sent for user: ${user.name} at ${new Date().toISOString()}`);
             } catch (error) {
               this.logger.error(`Failed to send end push notification: ${error}`);
             }
