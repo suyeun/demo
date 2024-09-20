@@ -13,6 +13,7 @@ export class TaskService {
     this.addCronJob();
     this.handleInterval();
     this.handleCron();
+    this.handleCheckWork();
   }
 
   addCronJob() {
@@ -25,6 +26,14 @@ export class TaskService {
     this.schedulerRegistry.addCronJob(name, job);
 
     this.logger.warn(`job ${name} added!!`);
+  }
+
+  async workEndCheck() {
+    const url = 'http://3.39.177.24:3000/api/v1/admin/users/workEnd';
+    const data = {
+      accessToken: '8809a64d910ea3765e6729acd2498158e6e8b70c99de87cf7d9f6891f506e42a',
+      command: {},
+    };
   }
 
   async getPushList() {
@@ -58,6 +67,11 @@ export class TaskService {
   handleInterval() {
     this.getPushList();
     this.logger.log('CREATE USER DATA');
+  }
+
+  @Cron(CronExpression.EVERY_HOUR)
+  handleCheckWork() {
+    this.workEndCheck();
   }
 
   @Cron(CronExpression.EVERY_MINUTE)

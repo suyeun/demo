@@ -37,7 +37,7 @@ module.exports = {
     {
       name: "push_server",
       script: "./dist/src/main.js",
-      instances: 0,
+      instances: 1,
       exec_mode: "cluster",
       node_args: ["--expose-gc"],
       env_localhost: {
