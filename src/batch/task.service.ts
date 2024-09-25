@@ -37,8 +37,8 @@ export class TaskService {
     };
 
     try {
-      //const response = await axios.post(url, data);
-      //console.log(response.data);
+      const response = await axios.post(url, data);
+      console.log(response.data);
     } catch (error) {
       console.error(`Error in getPushList: ${error}`);
     }
