@@ -29,11 +29,19 @@ export class TaskService {
   }
 
   async workEndCheck() {
+    console.log('workEndCheck');
     const url = 'http://3.39.177.24:3000/api/v1/admin/users/workEnd';
     const data = {
       accessToken: '8809a64d910ea3765e6729acd2498158e6e8b70c99de87cf7d9f6891f506e42a',
       command: {},
     };
+
+    try {
+      const response = await axios.post(url, data);
+      console.log(response.data);
+    } catch (error) {
+      console.error(`Error in getPushList: ${error}`);
+    }
   }
 
   async getPushList() {
